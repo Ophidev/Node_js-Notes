@@ -17,8 +17,19 @@ const mongoose = require("mongoose");
 const connectDB = async () => {
 
     await mongoose.connect(
-        "mongodb+srv://Mork37:Database%40Password@learningmongodb.zsgjihs.mongodb.net/"
+        "mongodb+srv://Mork37:Database%40Password@learningmongodb.zsgjihs.mongodb.net/DevTinder"
     );//connection string
+
+//important information
+/*
+"mongodb+srv://Mork37:Database%40Password@learningmongodb.zsgjihs.mongodb.net/"-> this is connection string
+ it is used to connect with the cluster now because we are not added a information of database here.
+
+ so for existing database you can the database name at the end of connection string.
+ and to create a new database at first you can add any name at the end of the connection string.
+
+ "mongodb+srv://Mork37:Database%40Password@learningmongodb.zsgjihs.mongodb.net/NameOfDatabase"
+*/
 
 };
 
