@@ -1,0 +1,17 @@
+{
+  "name": "express_js_server",
+  "version": "1.0.0",
+  "description": "Learning Express.js and creating a server using it ",
+  "license": "ISC",
+  "author": "\"Aditya Bhatt\"",
+  "type": "commonjs",
+  "main": "App.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.18.0"
+  }
+}
