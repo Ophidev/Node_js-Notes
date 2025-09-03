@@ -198,7 +198,8 @@ app.post("/signup", async (req, res) => {
 
   try {
     // Save user to DB (returns a Promise)
-    await user.save();
+    await user.save(); 
+    //this save will save a document in our collection
     res.send("🎉 User successfully saved to DB!");
   } catch (err) {
     res.status(400).send("❌ Error saving the user: " + err.message);
@@ -319,5 +320,65 @@ sequenceDiagram
 * Used async/await for DB operations.
 
 ---
+
+
+
+
+
+# How Mongoose Creates the `users` Collection
+
+## 1. Defining a Model
+```js
+module.exports = mongoose.model("User", userSchema);
+````
+
+* `"User"` is the **model name** (singular).
+* `userSchema` is the schema definition.
+
+---
+
+## 2. Automatic Pluralization
+
+Mongoose automatically **pluralizes** the model name:
+
+* `"User"` → `"users"` (lowercased + pluralized)
+* Creates a MongoDB collection named **`users`**.
+
+---
+
+## 3. Why Does Mongoose Do This?
+
+* MongoDB collections are usually plural (`users`, `products`, `orders`, etc.).
+* Mongoose assumes the plural form to make life easier.
+
+---
+
+## 4. Controlling the Collection Name
+
+If you want a fixed collection name, pass it as a third argument:
+
+```js
+module.exports = mongoose.model("User", userSchema, "myUsers");
+```
+
+➡️ This will always store data in **`myUsers`** collection.
+
+---
+
+## 5. Example Flow in Your Code
+
+1. You create a `User` instance:
+
+   ```js
+   const user = new User({ firstName: "Aditya", ... });
+   ```
+2. Call `.save()`:
+
+   * Mongoose maps `"User"` → `"users"` collection.
+   * Inserts the document there.
+
+---
+
+✅ Even if you don’t mention `"users"`, Mongoose automatically creates and uses it.
 
 
