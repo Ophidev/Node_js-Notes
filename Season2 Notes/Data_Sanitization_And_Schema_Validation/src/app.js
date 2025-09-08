@@ -4,53 +4,57 @@ const User = require("./models/user");
 
 const app = express();
 
-  app.use(express.json());//this use middleware will called for all the api call because not specified a route.
-  //express.json is a middleware(method) used to read the josn format data passed into api body.
-
+app.use(express.json()); //this use middleware will called for all the api call because not specified a route.
+//express.json is a middleware(method) used to read the josn format data passed into api body.
 
 //now Creating a DELETE/user api to delete user by id go to mongoose documentation inside the models to find method to delte user by id.
 
 //now by uisng the Model.findByIdAndDelete() method of mongoose library.
 
-app.delete('/user', async (req,res) => {
-   
-    try{
-
-       const userId = req.body.userId;
-       const user = await User.findByIdAndDelete(userId);
-       //or
-       //const user = await User.findByIdAndDelete({_id:userId});
-       res.send("Successfully Delted a user!");
-      
-
-    }
-    catch(err){
-
-      res.status(400).send("Problem in the Delte api!");
-    }
+app.delete("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByIdAndDelete(userId);
+    //or
+    //const user = await User.findByIdAndDelete({_id:userId});
+    res.send("Successfully Delted a user!");
+  } catch (err) {
+    res.status(400).send("Problem in the Delte api!");
+  }
 });
 
-
-//now Creating a PATCH/user api to update a user by Id 
+//now Creating a PATCH/user api to update a user by Id
 //by using the method Model.findUserByIdAndUpdate().
 
-app.patch('/user', async (req,res) =>{
+app.patch("/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const newData = req.body;
 
-    try{
-      const userId = req.body.userId;
-      const newData = req.body;
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
 
-      const user = await User.findByIdAndUpdate(userId,newData,{returnDocument:'before'},{runValidators:true});
+    const isUpdateAllowed = Object?.keys(newData).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
 
-      console.log(user);
-
-      res.send("Successfully updated a data");
+    if (!isUpdateAllowed) {
+      throw Error("Update is not allowed");
     }
-    catch(err){
-
-      res.status(400).send("Update failed:"+err.message);
+    if (newData?.skills.length > 10){
+      throw Error("Skills cant be more then 10");
     }
-}); 
+    const user = await User.findByIdAndUpdate(userId, newData, {
+      returnDocument: "before",
+      runValidators: true,
+    });
+
+    console.log(user);
+
+    res.send("Successfully updated a data");
+  } catch (err) {
+    res.status(400).send("Update failed:" + err.message);
+  }
+});
 /*
 newData = {
     "userId":"68b7bfeb1878367e70c27313",
@@ -74,44 +78,33 @@ const user = await User.findByIdAndUpdate(userId,newData,{returnDocument:'before
  - and 'after' as a value gives new data. 
 */
 
-
-
-
-
 //Creting a GET/userbyemail api to get the user by email and I have stored 2 user with the same email usng findOne() method of mongoose
 //we fetch the data by using the User model
 //so in the documentation of mongoose go inside the api section then select models to get their methods.
 
-app.get("/getuserbyemail", async (req,res) => {
+app.get("/getuserbyemail", async (req, res) => {
+  try {
+    const userEmail = req.body.emailId;
 
- try{
-   const userEmail = req.body.emailId;
+    const user = await User.findOne({ emailId: userEmail });
 
-   const user = await User.findOne({emailId:userEmail})
-   
-   res.send(user);
-
-   }
-   catch(err){
-     res.status(400).send("Error in fetching data");
-   }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("Error in fetching data");
+  }
 });
 
-
 //Now createing a GET/feed api to get all the user from the database by using the find() mongoose method
-app.get('/feed', async (req,res) => {
-
-    try{
-      const user = await User.find({}); //pass empty to get all the documents
-      res.send(user); //user will be array of objects.
-    }
-    catch(err){
-      res.status(400).send("Something went wrong!");
-    }
+app.get("/feed", async (req, res) => {
+  try {
+    const user = await User.find({}); //pass empty to get all the documents
+    res.send(user); //user will be array of objects.
+  } catch (err) {
+    res.status(400).send("Something went wrong!");
+  }
 });
 
 app.post("/signup", async (req, res) => {
-
   const user = new User(req.body);
   try {
     await user.save(); //this will return an promise (in general all the mongoose function return promises)
@@ -120,7 +113,6 @@ app.post("/signup", async (req, res) => {
     res.status(400).send("Error saving the user: " + err.message);
   }
 });
-
 
 connectDB()
   .then(() => {
@@ -133,4 +125,3 @@ connectDB()
   .catch((err) => {
     console.error("Database cannot be connected!");
   });
-
