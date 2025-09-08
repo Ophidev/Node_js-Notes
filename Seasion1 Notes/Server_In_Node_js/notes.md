@@ -291,5 +291,51 @@ sequenceDiagram
     Net->>Radio: packets → converted back to radio waves
     Radio->>Friend: "Hello 👋" appears in chat
 ````
+---
+---
 
+# simple socket 
+
+```mermaid
+flowchart TD
+    A[👨‍💻 Client Program] 
+    B[🔌 Client Socket]
+    C[🌐 TCP/IP Layer]
+    D[🌐 TCP/IP Layer on Server]
+    E[🔌 Server Socket]
+    F[🖥️ Server Program]
+
+    A -->|📝 HTTP Request| B
+    B -->|📦 Raw Bytes| C
+    C -->|🚚 Packets Travel| D
+    D -->|📦 Bytes Delivered| E
+    E -->|📖 HTTP Parser Reads| F
+
+    F -->|📝 HTTP Response| E
+    E -->|📦 Raw Bytes| D
+    D -->|🚚 Packets Travel| C
+    C -->|📦 Bytes Delivered| B
+    B -->|📖 HTTP Parser Reads Response| A
+
+    classDef client fill:#0000,stroke:#0a66c2,stroke-width:2px;
+    classDef server fill:#0000,stroke:#ff6700,stroke-width:2px;
+
+    class A,B,C client;
+    class D,E,F server;
 ```
+
+---
+
+### **Explanation of the vertical stack**
+
+1. **Top → Bottom** = Request flow.
+2. **Bottom → Top** = Response flow.
+3. Each layer shows its **role** with an emoji:
+
+   * 🔌 Socket = connection
+   * 🌐 TCP/IP = packet delivery
+   * 📝 HTTP = message format
+
+---
+
+

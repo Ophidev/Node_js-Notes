@@ -214,6 +214,52 @@ Close 🧹
 👉 **In short:** Event loop ensures **JavaScript stays non-blocking** and executes tasks in order.  
 
 ---
+## 🧵 What is Thread
+- Thread is a exectuion path inside the process which allow the process to do multiple things at the same time (multitasking/concurrency/parallelism).
+
+# Understanding Threads and Execution Paths
+
+## 🔹 Execution Path = “Order of Steps Being Run"
+
+When a program is running, the CPU is fetching and executing instructions one after another.
+That straight line of instructions → that’s an execution path.
+
+👉 **A thread = one straight line of execution (one flow through your code).**
+
+---
+
+## 🔹 Example Without Threads (1 Execution Path)
+
+```javascript
+console.log("Task 1: Read file");
+// (pretend it takes 2 seconds)
+console.log("Task 2: Process file");
+// (pretend it takes 2 seconds)
+console.log("Task 3: Save file");
+```
+
+**Explanation:**
+
+* Only 1 thread.
+* Execution path = Task 1 → Task 2 → Task 3.
+* Takes \~6 seconds total.
+* Nothing else can run in parallel.
+
+---
+
+## 🔹 Example With Threads (Multiple Execution Paths)
+
+Imagine we spawn 3 threads:
+
+* Thread 1 does “Read file.”
+* Thread 2 does “Process file.”
+* Thread 3 does “Save file.”
+
+**Explanation:**
+
+* The CPU scheduler can run them **at the same time** (on different cores, or interleaved on one core).
+* Multiple execution paths = work gets done faster, or program feels more responsive.
+
 
 ## 🧵 Thread Pool
 - The **thread pool** is a set of **worker threads** in libuv (default = 4).  
@@ -222,7 +268,12 @@ Close 🧹
   - 🌐 DNS lookups  
   - 🔐 Crypto operations  
 - These heavy tasks are offloaded to the thread pool instead of blocking the main thread.  
-- Once completed, results are sent back to the **callback queue** for execution via the event loop.  
+- Once completed, results are sent back to the **callback queue** for execution via the event loop. 
+
+### 🔹 Key Points
+- These 4 threads are software threads
+- They run on your CPU’s hardware threads (like your 16-thread Ryzen CPU).
+- Because tasks are done in the background by libuv threads, the main thread stays free → non-blocking I/O.
 
 👉 **Analogy:** Like extra cooks 👨‍🍳👩‍🍳 helping the main chef (V8) in the kitchen.  
 

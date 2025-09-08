@@ -81,6 +81,64 @@ They’re kept locally so we can use them while developing.
 
 ---
 
+
+
+
+# 🌐 API vs REST API – Learning Notes
+
+## 🔹 What is an API?
+- **API = Application Programming Interface**  
+- A **set of rules** that allow two pieces of software to **communicate**.  
+- APIs are **not limited to web** – they exist in:
+  - 💻 Operating Systems (Windows API)
+  - 📚 Programming Libraries (Java API)
+  - 🗄️ Databases (SQL API)
+  - 🌍 Web APIs (REST, GraphQL, SOAP, etc.)
+
+👉 Think of an API as a **restaurant menu 🍽️**:  
+- The **client** (you) orders from the menu (API).  
+- The **kitchen** (server) prepares it.  
+- The **waiter** (API call) delivers the food (response).  
+
+---
+
+## 🔹 What is a REST API?
+- **REST = Representational State Transfer** → an **architecture style** for web APIs.  
+- REST APIs use **HTTP methods**:  
+  - 📖 `GET` → Fetch data  
+  - ✍️ `POST` → Send new data  
+  - 🛠️ `PUT` → Update existing data  
+  - 🗑️ `DELETE` → Remove data  
+
+### 📝 Example Endpoints
+```
+
+GET    /users        -> Get list of users
+POST   /users        -> Create a new user
+GET    /users/\:id    -> Get specific user
+PUT    /users/\:id    -> Update a user
+DELETE /users/\:id    -> Delete a user
+
+````
+
+---
+
+## 🔄 How API Works (Client ↔ Server)
+
+```mermaid
+graph TD
+  A["💻 Frontend (Client)"] -->|"GET /users"| B["🖥️ Backend Server"]
+  B -->|"Database Query"| C["🗄️ Database"]
+  C -->|"Data"| B
+  B -->|"JSON Response"| A
+
+```
+---
+
+
+
+
+
 ## 🛠️ Creating a Server with Express.js
 
 1. Install express:
@@ -141,7 +199,7 @@ app.listen(3737, () => {
 flowchart TD
    A[📦 Express 4.19.2] --> B[Patch 4.19.3 🐛]
    B --> C[Minor 4.20.3 ✨]
-   C --> D[Major 5.20.3 💥 Breaking Changes]
+   C --> D[Major 5.20.3 💥]
 ```
 
 ---
