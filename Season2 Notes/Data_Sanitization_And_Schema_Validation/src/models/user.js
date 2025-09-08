@@ -1,6 +1,8 @@
 //Creation of the User Schema
 
 const mongoose = require("mongoose");
+const validator = require("validator");
+const { default: isEmail } = require("validator/lib/isEmail");
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,10 +22,22 @@ const userSchema = new mongoose.Schema(
       unique: true, //this field should be not duplicate
       trim: true,
       lowercase: true, //we store the email in lowercase even typed in any case.
+      validate(value){
+        if(!validator.isEmail(value)){
+
+          throw new Error("Email is not valid!"+value);
+        }
+      }
     },
     password: {
       type: String,
       required: true,
+      validate(value){
+        if(!validator.isStrongPassword(value)){
+
+            throw new Error ("Enter a Strong password!" + value);
+        }
+      }
     },
     age: {
       type: Number,
@@ -43,6 +57,13 @@ const userSchema = new mongoose.Schema(
       default:
         "https://www.shutterstock.com/image-vector/vector-design-avatar-dummy-sign-600nw-1290556063.jpg",
       //this will set default value
+      validate(value){
+
+        if(!validator.isURL(value)){
+
+          throw new Error("Invalid photo URL! : "+value);
+        }
+      }
     },
 
     about: {
