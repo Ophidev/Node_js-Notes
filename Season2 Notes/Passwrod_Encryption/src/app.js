@@ -1,0 +1,182 @@
+const connectDB = require("./config/database");
+const express = require("express");
+const User = require("./models/user");
+const { validateSignUpData } = require("./utils/validation");
+
+const app = express();
+
+app.use(express.json()); //this use middleware will called for all the api call because not specified a route.
+//express.json is a middleware(method) used to read the josn format data passed into api body.
+
+//now Creating a DELETE/user api to delete user by id go to mongoose documentation inside the models to find method to delte user by id.
+
+//now by uisng the Model.findByIdAndDelete() method of mongoose library.
+
+app.delete("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByIdAndDelete(userId);
+    //or
+    //const user = await User.findByIdAndDelete({_id:userId});
+    res.send("Successfully Delted a user!");
+  } catch (err) {
+    res.status(400).send("Problem in the Delte api!");
+  }
+});
+
+//now Creating a PATCH/user api to update a user by Id
+//by using the method Model.findUserByIdAndUpdate().
+
+app.patch("/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const newData = req.body;
+    
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object?.keys(newData).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+
+    if (!isUpdateAllowed) {
+      throw Error("Update is not allowed");
+    }
+    if (newData?.skills.length > 10){
+      throw Error("Skills cant be more then 10");
+    }
+    const user = await User.findByIdAndUpdate(userId, newData, {
+      returnDocument: "before",
+      runValidators: true,
+    });
+
+    console.log(user);
+
+    res.send("Successfully updated a data");
+  } catch (err) {
+    res.status(400).send("Update failed:" + err.message);
+  }
+});
+/*
+newData = {
+    "userId":"68b7bfeb1878367e70c27313",
+    "firstName": "Ayush",
+    "lastName": "Bhatt",
+    "emailId": "Ayush@gmail.com",
+    "password": "Ayush@1234",
+    "newField": "j;asdfladjfl;adjsfjasdf"
+}
+
+see their is userId and newField which are not being added in the Schema (userSchema)
+so our mongodb will ignore them and just update those field which are present in the Schema
+defined by the user.
+
+const user = await User.findByIdAndUpdate(userId,newData,{returnDocument:'before'});
+-now about the options-> options provides are some other functionality in the mongoose method or middlewares.
+-for example here the option is -> {returnDocument:'before/after'} ->:
+ - it takes input as string and just values before or after 
+ - it helps us to get the data which is being updated or new data
+ - example if 'before' as value then old data which is going to be updated 
+ - and 'after' as a value gives new data. 
+*/
+
+//Creting a GET/userbyemail api to get the user by email and I have stored 2 user with the same email usng findOne() method of mongoose
+//we fetch the data by using the User model
+//so in the documentation of mongoose go inside the api section then select models to get their methods.
+
+app.get("/getuserbyemail", async (req, res) => {
+  try {
+    const userEmail = req.body.emailId;
+
+    const user = await User.findOne({ emailId: userEmail });
+
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("Error in fetching data");
+  }
+});
+
+//Now createing a GET/feed api to get all the user from the database by using the find() mongoose method
+app.get("/feed", async (req, res) => {
+  try {
+    const user = await User.find({}); //pass empty to get all the documents
+    res.send(user); //user will be array of objects.
+  } catch (err) {
+    res.status(400).send("Something went wrong!");
+  }
+});
+
+app.post("/signup", async (req, res) => {
+
+  //always first validate the data 
+  
+  validateSignUpData(req);
+
+  const {firstName, lastName, emailId, password} = req.body;
+
+  //second do Encryption of password then store in DB
+
+  const passwordHash = await bcrypt.hash(password,10);
+
+  const user = new User({
+    firstName,
+    lastName,
+    emailId,
+    password: passwordHash
+  });
+
+  try {
+    await user.save(); //this will return an promise (in general all the mongoose function return promises)
+    res.send("Data successfully send!");
+  } catch (err) {
+    res.status(400).send("Error saving the user: " + err.message);
+  }
+});
+
+app.post("/login", async (req,res) => {
+
+   try{
+
+    // get the email and password from the user who is trying to login
+     const {emailId, password} = req.body;
+
+     //now let me check weather the email is present in DB or not
+
+     const user = await User.findOne({emailId:emailId});//basically getting a user from a enterd email
+
+     if(!user){//if user not found!
+
+        throw new Error("Invalid credential!");
+     }
+
+     //now compare the passwords
+
+     const isPasswordValid = await bcrypt.compare(password,user.password);
+
+     if(isPasswordValid){
+
+        res.send("Login Sucessfull!!");
+     }
+     else{
+       
+       throw new Error("Invalid credentials!");
+     }
+
+
+   }
+   catch(err){
+
+      res.status(400).send("ERROR: "+ err.message);
+   }
+});
+
+connectDB()
+  .then(() => {
+    console.log("sucessfully connected to DB");
+
+    app.listen("3737", () => {
+      console.log("!Server Started at port number 3737");
+    });
+  })
+  .catch((err) => {
+    console.error("Database cannot be connected!");
+  });
