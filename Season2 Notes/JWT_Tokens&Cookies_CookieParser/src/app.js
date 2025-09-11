@@ -124,15 +124,10 @@ app.post("/login", async (req,res) => {
 
      //now compare the passwords
 
-     const isPasswordValid = await bcrypt.compare(password,user.password);
-
+    const isPasswordValid = user.validatePassword(password);//calling Schema.methods
      if(isPasswordValid){
 
-       //Create a JWT Token
-        const token = await jwt.sign({_id : user?._id}, "DEV@Tinder&3737");
-      // awiat jwt.sign({payload(secret_Data)},key); //arguments of methods.
-      // key -> is known by just jwt and the server not by the user.
-      
+      const token = await user.getJWT(); //calling Schema handler method.
 
        //Create create cookie and send the JWT token into it
 

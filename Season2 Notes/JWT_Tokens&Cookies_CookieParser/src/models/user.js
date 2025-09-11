@@ -1,8 +1,9 @@
 //Creation of the User Schema
 
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const validator = require("validator");
-const { default: isEmail } = require("validator/lib/isEmail");
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -78,6 +79,27 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.getJWT() = async function () {
+
+  const user = this;
+  //Create a JWT Token
+  const token = await jwt.sign({_id : user?._id}, "DEV@Tinder&3737");
+
+  return token;
+}
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+
+  const user = this;
+  const passwordHash = user.password;
+
+  const isPasswordValid = await bcrypt.compare(passwordInputByUser,passwordHash);
+  //remeber never change the position of the argument of bcrypt.compare() function
+  // awiat bcrypt.compare("user_Enterd_Password_onLogin","User_PasswordHash_save_in_DB")
+  
+  return isPasswordValid;
+
+}
 module.exports = mongoose.model("User", userSchema);
 // or
 /*
