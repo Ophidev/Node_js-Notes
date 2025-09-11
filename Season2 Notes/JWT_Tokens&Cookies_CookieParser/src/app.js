@@ -3,15 +3,13 @@ const express = require("express");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
-app.use(express.json()); //this use middleware will called for all the api call because not specified a route.
-//express.json is a middleware(method) used to read the josn format data passed into api body.
-
-//now Creating a DELETE/user api to delete user by id go to mongoose documentation inside the models to find method to delte user by id.
-
-//now by uisng the Model.findByIdAndDelete() method of mongoose library.
+app.use(express.json()); 
+app.use(cookieParser()); 
 
 app.delete("/user", async (req, res) => {
   try {
@@ -57,32 +55,6 @@ app.patch("/user/:userId", async (req, res) => {
     res.status(400).send("Update failed:" + err.message);
   }
 });
-/*
-newData = {
-    "userId":"68b7bfeb1878367e70c27313",
-    "firstName": "Ayush",
-    "lastName": "Bhatt",
-    "emailId": "Ayush@gmail.com",
-    "password": "Ayush@1234",
-    "newField": "j;asdfladjfl;adjsfjasdf"
-}
-
-see their is userId and newField which are not being added in the Schema (userSchema)
-so our mongodb will ignore them and just update those field which are present in the Schema
-defined by the user.
-
-const user = await User.findByIdAndUpdate(userId,newData,{returnDocument:'before'});
--now about the options-> options provides are some other functionality in the mongoose method or middlewares.
--for example here the option is -> {returnDocument:'before/after'} ->:
- - it takes input as string and just values before or after 
- - it helps us to get the data which is being updated or new data
- - example if 'before' as value then old data which is going to be updated 
- - and 'after' as a value gives new data. 
-*/
-
-//Creting a GET/userbyemail api to get the user by email and I have stored 2 user with the same email usng findOne() method of mongoose
-//we fetch the data by using the User model
-//so in the documentation of mongoose go inside the api section then select models to get their methods.
 
 app.get("/getuserbyemail", async (req, res) => {
   try {
@@ -149,14 +121,6 @@ app.post("/login", async (req,res) => {
         throw new Error("Invalid credential!");
      }
 
-     //now compare the passwords
-
-     const isPasswordValid = await bcrypt.compare(password,user.password);
-
-     if(isPasswordValid){
-
-        res.send("Login Sucessfull!!");
-     }
      else{
        
        throw new Error("Invalid credentials!");
@@ -169,6 +133,24 @@ app.post("/login", async (req,res) => {
       res.status(400).send("ERROR: "+ err.message);
    }
 });
+
+//let's create a profile get GET/profile api to validate the cookie
+
+app.get("/profile", async (req,res)=>{
+
+     const cookies =  req.cookies;//res.cookies is given by the express.
+
+     console.log(cookies);//we will get undefined because first we have parse the cookie
+                        // for that we have to use the cookie-parser a npm package
+                        //created by the Express js team.
+
+      const {token} = cookies;
+      //validate the token
+
+     res.send("Reading cookie!");
+});
+
+
 
 connectDB()
   .then(() => {
