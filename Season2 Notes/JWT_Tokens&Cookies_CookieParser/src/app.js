@@ -5,6 +5,7 @@ const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const userAuth = require("./middlewares/auth");
 
 const app = express();
 
@@ -135,7 +136,9 @@ app.post("/login", async (req,res) => {
 
        //Create create cookie and send the JWT token into it
 
-       res.cookie("token",token);
+       res.cookie("token",token,{
+        expires : new Date(Date.now() + 8 + 3600000),//cookie will expires in 8 hours
+      });
        
         res.send("Login Sucessfull!!");
      }
@@ -154,18 +157,15 @@ app.post("/login", async (req,res) => {
 
 //let's create a profile get GET/profile api to validate the cookie
 
-app.get("/profile", async (req,res)=>{
+app.get("/profile", userAuth, async (req, res) => { //added userAuth middleware.
+  try {
 
-     const cookies =  req.cookies;//res.cookies is given by the express.
+    const user = req.user; //getting user which is set by userAuth middleware.
+    res.send(user);
 
-     console.log(cookies);//we will get undefined because first we have parse the cookie
-                        // for that we have to use the cookie-parser a npm package
-                        //created by the Express js team.
-
-      const {token} = cookies;
-      //validate the token
-
-     res.send("Reading cookie!");
+  } catch (err) {
+    res.status(401).send("ERROR : " + err.message);
+  }
 });
 
 

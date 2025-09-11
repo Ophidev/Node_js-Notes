@@ -1,32 +1,40 @@
-const adminMiddleware = (req,res,next) => {
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-     const adminToken = "@admin";
-     const adminAuth = adminToken === "@admin";
+const userAuth = async (req,res,next) => {
 
-     if(!adminAuth){
+   try{
+      
+      //get the token from the cookie
+      const {token} = req.cookies
+      if(!token){
+         throw new Error("token envalid !!!!");
+      }
 
-        res.status(401).send("!admin not recongnised");
+      //validate the token
 
-     }
-     else{
+      const decodeObj = await jwt.verify(token,"DEV@Tinder&3737",{expiresIn: "1d"});//expires in 1day
 
-        next();
-     }
+      const {_id} = decodeObj;
+
+      const user = await User.findById(_id); //getting user from database with id
+
+      if(!user){
+         throw new Error("User not found!");
+      }
+
+      req.user = user; //attach the user we get from database to the req.user
+
+      next(); //now call the route handler.
+   
+
+   }
+   catch(err){
+
+      res.status(400).send("ERROR : "+ err.message);
+   }
+  
 };
 
-const userMiddleware = (req,res,next) => {
 
-     const userToken = "@user";
-     const userAuth = userToken === "@user";
-
-     if(!userAuth){
-
-        res.status(401).send("!user not recongnised");
-
-     }
-     else{
-
-        next();
-     }
-};
-module.exports = {adminMiddleware,userMiddleware};
+module.exports = userAuth;
