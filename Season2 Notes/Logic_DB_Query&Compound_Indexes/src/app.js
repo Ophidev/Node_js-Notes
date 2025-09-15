@@ -10,11 +10,13 @@ app.use(cookieParser());
 const authRouter = require("../src/routes/authRouter");
 const userRouter = require("../src/routes/userRouter");
 const profileRouter = require("../src/routes/profileRouter");
+const requestRouter = require("../src/routes/requestRouter");
 
 
 app.use('/',authRouter);
 app.use('/',userRouter);
 app.use('/',profileRouter);
+app.use('/',requestRouter);
 
 //so, suppose now if I call GET/profile api then our Express will first run 
 // app.use(express.json()) & app.use(cookieParser());
