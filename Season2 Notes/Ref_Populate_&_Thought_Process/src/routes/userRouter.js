@@ -1,7 +1,9 @@
 const express = require("express");
+const userAuth = require("../middlewares/auth");
+const ConnectionRequestModel = require("../models/connectionRequest");
+const user = require("../models/user");
 
 const userRouter = express.Router();
-
 
 //Now createing a GET/feed api to get all the user from the database by using the find() mongoose method
 userRouter.get("/feed", async (req, res) => {
@@ -12,41 +14,6 @@ userRouter.get("/feed", async (req, res) => {
     res.status(400).send("Something went wrong!");
   }
 });
-
-
-//now Creating a PATCH/user api to update a user by Id
-//by using the method Model.findUserByIdAndUpdate().
-
-userRouter.patch("/user/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const newData = req.body;
-    
-    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
-
-    const isUpdateAllowed = Object?.keys(newData).every((k) =>
-      ALLOWED_UPDATES.includes(k)
-    );
-
-    if (!isUpdateAllowed) {
-      throw Error("Update is not allowed");
-    }
-    if (newData?.skills.length > 10){
-      throw Error("Skills cant be more then 10");
-    }
-    const user = await User.findByIdAndUpdate(userId, newData, {
-      returnDocument: "before",
-      runValidators: true,
-    });
-
-    console.log(user);
-
-    res.send("Successfully updated a data");
-  } catch (err) {
-    res.status(400).send("Update failed:" + err.message);
-  }
-});
-
 
 userRouter.delete("/user", async (req, res) => {
   try {
@@ -60,18 +27,63 @@ userRouter.delete("/user", async (req, res) => {
   }
 });
 
+const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
 
-
-userRouter.get("/getuserbyemail", async (req, res) => {
+userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
-    const userEmail = req.body.emailId;
+    const loggedInUser = req.user;
 
-    const user = await User.findOne({ emailId: userEmail });
+    //getting the necessary fields only
+    const connectionRequests = await ConnectionRequestModel.find({
 
-    res.send(user);
+      //connectionRequests.toUserId == loggedInUser._id
+      //connectionRequestes.status == "Interested"
+      toUserId: loggedInUser._id,
+      status: "interested",
+    }).populate("fromUserId", USER_SAFE_DATA);//populate only the necessary feilds of data
+  //}).populate("fromUserId",["firstName","lastName"]);
+
+    res.json({
+      message: "Data fetched Successfully!",
+      data: connectionRequests,
+    });
   } catch (err) {
-    res.status(400).send("Error in fetching data");
+    res.status(400).send("ERROR : " + err.message);
   }
 });
 
-module.exports = userRouter;
+
+userRouter.get("/user/connections", userAuth, async (req, res) => {
+
+  const loggedInUser = req.user;
+
+  //populate/getting the only USER_SAFE_DATA Fields where fromUserId == loggedInUser && status == "accepted",
+  // OR populate toUserId == loggedInUser && status == "accepted",
+
+  const connectionRequests = await ConnectionRequestModel.find({
+    $or : [
+       {fromUserId : loggedInUser._id, status : "accepted"},
+       {toUserId : loggedInUser._id, status : "accepted"}
+      ],
+  })
+  .populate("fromUserId",USER_SAFE_DATA)
+  .populate("toUserId", USER_SAFE_DATA);
+
+
+  const data = connectionRequests.map((row) => {
+
+       if(row.fromUserId._id.toString() === loggedInUser._id.toString()){
+        //as we know we can't compare mongoose id directly so we convert them into Strings.
+
+          return row.toUserId;
+       }
+
+       //else row.toUserId === loggedInUser._id
+       return row.fromUserId;
+  });
+
+  res.json({ data });
+
+});
+
+module.exports = userRouter;  

@@ -4,10 +4,12 @@ const connectionRequestSchema = new mongoose.Schema({
 
     fromUserId:{
         type: mongoose.Schema.Types.ObjectId, //different datatype not a string, mongoose does not save it as string
+        ref : "User", //reference to the users collection help us to populate the data
         required: true,
     },
     toUserId:{
         type: mongoose.Schema.Types.ObjectId,
+        ref : "User",
         required: true,
     },
     status: {
