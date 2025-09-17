@@ -1,19 +1,11 @@
 const express = require("express");
 const userAuth = require("../middlewares/auth");
 const ConnectionRequestModel = require("../models/connectionRequest");
-const user = require("../models/user");
+const User = require("../models/user");
 
 const userRouter = express.Router();
 
-//Now createing a GET/feed api to get all the user from the database by using the find() mongoose method
-userRouter.get("/feed", async (req, res) => {
-  try {
-    const user = await User.find({}); //pass empty to get all the documents
-    res.send(user); //user will be array of objects.
-  } catch (err) {
-    res.status(400).send("Something went wrong!");
-  }
-});
+
 
 userRouter.delete("/user", async (req, res) => {
   try {
@@ -84,6 +76,70 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
   res.json({ data });
 
+});
+
+
+
+//Now createing a GET/feed api to get all the user from the database by using the find() mongoose method
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    
+    const loggedInUser = req.user;
+
+    //now let's write the logic of the pagination
+    const page = parseInt(req.query.page) || 1; //bydefault 1 if query not send 
+    let limit = parseInt(req.query.limit) || 10; //bydefault 10 if query not send in the /feed route
+
+    limit = limit > 50 ? 50 : limit; //if a client/user set limit more then 50 keep it 50 other wise the normal limit
+                                     //because this can cost your DB, hang your DB if you have 1 lakh users and client want all at the time.
+
+    const skip = (page-1)*limit; //formula to get the skip value so put in the skip() method
+
+    // first get all the connectionRequests collection documents data where
+    // fromUserId == loggedInUser._id or toUserId == loggedInUser._id
+
+    const connectionRequests =  await ConnectionRequestModel.find({
+
+      $or : [{fromUserId: loggedInUser._id},{toUserId: loggedInUser._id}],
+
+    }).select("fromUserId toUserId"); // selector() method is just used to get specefic fields 
+
+
+    //now after getting all the requestConnections collection documents of the loggedInUser
+
+    const hideUsersFromFeed  = new Set(); //creation of Set dataStructure which will not allow duplicate data
+
+
+    //adding all the connectionRequests data in the set so it will eliminate the duplicate id's
+    connectionRequests.forEach((req) => {
+
+        hideUsersFromFeed.add(req.fromUserId.toString()); //converting id's into string because their datatypes is moongose.types.object_id of
+        hideUsersFromFeed.add(req.toUserId.toString());
+    })
+
+
+    //now fetching the users from DB-: 
+    //1st conditon => which are not in hideUsersFromFeed set (users collection documents id's not in hideUsersFromFeed);
+    //2st condition => the loggedInUser document data should not their (users collection document id not equals to loggedInUser._id);
+    // 1st condition and 2nd condition will get us the feed users.
+
+    const feedUsers = await User.find({
+
+       $and: [
+          {_id : {$nin : Array.from(hideUsersFromFeed)} },//$in is a array comparision operator so convertion set to array
+          {_id : {$ne : loggedInUser._id} },
+       ]
+    })
+    .select(USER_SAFE_DATA)
+    .skip(skip)
+    .limit(limit);
+
+  
+    res.send(feedUsers);
+    
+  } catch (err) {
+    res.status(400).send(" ERROR : "+ err.message);
+  }
 });
 
 module.exports = userRouter;  
