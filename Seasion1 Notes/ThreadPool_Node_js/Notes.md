@@ -4,7 +4,7 @@
 ---
 
 ## 1️⃣ What is the Libuv Thread Pool? 🧵
-The **Libuv thread pool** is a group of worker threads that Node.js uses to handle **time-consuming asynchronous tasks** without blocking the main **event loop**.
+The **Libuv thread pool** is a group of worker threads that Node.js uses to handle **time-consuming asynchronous tasks** without blocking the main **Thread**.
 
 🔧 **How it works:**
 1. When the **V8 engine** encounters a heavy async task (e.g. file operation), it sends it to **Libuv**.  
@@ -34,7 +34,7 @@ process.env.UV_THREADPOOL_SIZE = 8;
 
 ## 3️⃣ When Does Node.js Use the Thread Pool? 📋
 
-The thread pool is used for tasks that would otherwise block the event loop:
+The thread pool is used for tasks that would otherwise block the event loop/main thread:
 
 * 📂 File system operations (`fs.readFile`, `fs.writeFile`)
 * 🌐 DNS lookups
