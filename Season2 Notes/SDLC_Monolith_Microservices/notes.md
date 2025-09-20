@@ -1,4 +1,4 @@
-# 🌟 Lecture Notes: Software Development Life Cycle (SDLC) & Monolith vs Microservices
+# 🌟 Seasion 2 Lecture 1 Notes: Software Development Life Cycle (SDLC) & Monolith vs Microservices
 
 ---
 
