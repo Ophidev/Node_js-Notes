@@ -134,7 +134,7 @@ connectDB()
 👉 Before creating an actual MongoDB collection, we define its **Schema**.
 
 * **Schema**: Structure that defines what fields a document will have.
-* **Model**: A class created from the schema. It is used to create new documents inside the collection.
+* **Model**: A class created from the schema. It is used to create new documents inside the collection & intrect with the collection.
 
 📖 Example: User Schema & Model
 
@@ -170,6 +170,9 @@ module.exports = mongoose.model("User", userSchema);
 /*
 Syntax:
 const ModelReference = mongoose.model("ModelName", schema);
+const ModelReference = mongoose.model("ModelName", schemaName, collectionName);
+- if not given collection name it will take automatically collection Name from the model name in the 
+- lowercase and plural
 - Always start model names with Capital letters ✅
 */
 ```
