@@ -132,7 +132,7 @@ const userSchema = new mongoose.Schema({...}, { timestamps: true });
 ---
 
 ## 🖥️ Example User Schema (Final Version)
-
+ - <b>By using of the validator library</b> -> which provides as various methods of validations.
 ```js
 const mongoose = require("mongoose");
 const validator = require("validator");
