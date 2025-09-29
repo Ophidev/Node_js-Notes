@@ -1,5 +1,5 @@
 
-# 🌟 Lecture Notes: Season 2 – Lecture 11
+# 🌟 Lecture Notes: Season 2 – Lecture 12
 
 ## 🧩 Logical DB Query & Compound Indexes + Building Connection Request APIs
 
