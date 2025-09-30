@@ -267,12 +267,7 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
 
 ---
 
-## 📷 Screenshots
-
-👉 Add screenshots here for Postman requests and lecture slides:
-![Insert Image Here](image_placeholder.png)
-![Insert Image Here](image_placeholder.png)
-
+  
 ---
 
 # ✅ Summary

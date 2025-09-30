@@ -1,7 +1,7 @@
 
 ---
 
-# 🌟 Lecture Notes: Ref, Populate & API Thought Process
+# 🌟 Lecture 13 Notes: Ref, Populate & API Thought Process
 
 ## 📝 Key Points
 
@@ -233,11 +233,6 @@ module.exports = ConnectionRequestModel;
 ```
 
 ---
-
-## 📸 Screenshots
-
-![Insert Image Here](image_placeholder.png)
-(Add your lecture board/Postman screenshots here)
 
 ---
 
