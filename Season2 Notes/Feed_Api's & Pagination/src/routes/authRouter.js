@@ -10,24 +10,25 @@ const authRouter = express.Router(); //creation of router
 
 authRouter.post("/signup", async (req, res) => {
 
-  //always first validate the data 
+  try {
+      //always first validate the data 
   
   validateSignUpData(req);
 
-  const {firstName, lastName, emailId, password} = req.body;
+  const {firstName, lastName, emailId, password, about} = req.body;
 
   //second do Encryption of password then store in DB
 
   const passwordHash = await bcrypt.hash(password,10);
 
+  //create the instance of User model to save the data in DB
   const user = new User({
     firstName,
     lastName,
     emailId,
-    password: passwordHash
+    password: passwordHash,
+    about
   });
-
-  try {
     await user.save(); //this will return an promise (in general all the mongoose function return promises)
     res.send("Data successfully send!");
   } catch (err) {
@@ -53,13 +54,13 @@ authRouter.post("/login", async (req,res) => {
      }
 
      //now compare the passwords
-
-    const isPasswordValid = user.validatePassword(password);//calling Schema.methods
+    
+    const isPasswordValid = await user.validatePassword(password);//calling Schema.methods
      if(isPasswordValid){
 
       const token = await user.getJWT(); //calling Schema handler method.
 
-       //Create create cookie and send the JWT token into it
+       //Create cookie and send the JWT token into it
 
        res.cookie("token",token,{
         expires : new Date(Date.now() + 8 + 3600000),//cookie will expires in 8 hours

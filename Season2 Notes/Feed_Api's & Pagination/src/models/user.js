@@ -80,15 +80,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.methods.getJWT = async function () {
-
-  const user = this;
-  //Create a JWT Token
-  const token = await jwt.sign({_id : user?._id}, "DEV@Tinder&3737");
-
-  return token;
-}
-
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
 
   const user = this;
@@ -101,6 +92,17 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
   return isPasswordValid;
 
 }
+
+userSchema.methods.getJWT = async function () {
+
+  const user = this;
+  //Create a JWT Token
+  const token = await jwt.sign({_id : user?._id}, "DEV@Tinder&3737");
+
+  return token;
+}
+
+
 module.exports = mongoose.model("User", userSchema);
 // or
 /*

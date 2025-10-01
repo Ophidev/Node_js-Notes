@@ -1,4 +1,5 @@
 const validator = require("validator");
+const { default: isEmail } = require("validator/lib/isEmail");
 
 const validateSignUpData = (req) => {
 
@@ -6,15 +7,15 @@ const validateSignUpData = (req) => {
 
     if(!firstName || !lastName){
 
-        throw Error("Name is not Valid!");
+        throw new Error("Name is not Valid!");
     }
-    else if(!validator.isEmail(emailId)){
+    if(!emailId || !validator.isEmail(emailId)){
 
-        throw Error ("Email is not Valid!");
+        throw new Error ("Email is not Valid!");
     }
-    else if(!validator.isStrongPassword(password)){
+    if(!password || !validator.isStrongPassword(password)){
 
-        throw Error ("Please Enter a Strong password!");
+        throw new Error ("Please Enter a Strong password!");
     }
 
 };
