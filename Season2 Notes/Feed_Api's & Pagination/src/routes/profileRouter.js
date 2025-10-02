@@ -74,8 +74,6 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
     const loggedInUser = req.user;
     const passwordHash = loggedInUser.password;
 
-    console.log(loggedInUser);
-    console.log(passwordHash);
     const isPasswordValid = await bcrypt.compare(
       req.body.oldPassword,
       passwordHash

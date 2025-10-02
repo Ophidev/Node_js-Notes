@@ -24,7 +24,7 @@ requestRouter.post(
       }
 
       //let's check that toUserId present in DB or not?
-      console.log(toUserId);
+      
       const toUser = await User.findById(toUserId);
 
       if (!toUser) {
@@ -48,7 +48,7 @@ requestRouter.post(
         return res.status(404).send("Connection Request already Exists!!");
       }
 
-      //Now before saving let also write logic for one mroe corner case ie. -:
+      //Now before saving let also write logic for one more corner case ie. -:
       //IF a person sending connection request to itself
       //for that we will use the pre middleware or method given my the mongoose
       //which help us to write logic in it before the saving data in the database

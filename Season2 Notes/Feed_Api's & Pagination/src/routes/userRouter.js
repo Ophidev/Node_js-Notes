@@ -26,6 +26,8 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     const loggedInUser = req.user;
 
     //getting the necessary fields only
+    //and Model.find({}) method returns an array of results based on condition.
+    //so, we will get all the request recived no need to loop.
     const connectionRequests = await ConnectionRequestModel.find({
 
       //connectionRequests.toUserId == loggedInUser._id
@@ -61,6 +63,13 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   .populate("fromUserId",USER_SAFE_DATA)
   .populate("toUserId", USER_SAFE_DATA);
 
+  // now due to the above logic to fetching all the connections we also 
+  // we also get the loggedIn user as in the result so we don't want that
+  //means -> in above we are populating data from the fromUserId and toUserId
+  //so, because of it fromUserId may contain loggedInUser (fromUserID = loggedInUser data)
+  // and toUserID may contain loggedInUser (toUserId = loggedInUser data)
+  // we just want fromUserId or toUserId where loggedInUser not presents
+    // so below is the logic to prevent it.
 
   const data = connectionRequests.map((row) => {
 
@@ -74,7 +83,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
        return row.fromUserId;
   });
 
-  res.json({ data });
+  res.json({ connectionRequests });
 
 });
 
@@ -87,6 +96,9 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     const loggedInUser = req.user;
 
     //now let's write the logic of the pagination
+    //So, pagination will help us to get just 10 data at once in out Api not all the users at once.
+    // and when in the api query page and limit is given then this logic will give us another 10 users.
+
     const page = parseInt(req.query.page) || 1; //bydefault 1 if query not send 
     let limit = parseInt(req.query.limit) || 10; //bydefault 10 if query not send in the /feed route
 
@@ -102,7 +114,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
       $or : [{fromUserId: loggedInUser._id},{toUserId: loggedInUser._id}],
 
-    }).select("fromUserId toUserId"); // selector() method is just used to get specefic fields 
+    }).select("fromUserId toUserId"); // select() method is just used to get specefic fields 
 
 
     //now after getting all the requestConnections collection documents of the loggedInUser
@@ -134,6 +146,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     .skip(skip)
     .limit(limit);
 
+  //skip() & limit() are the methods to set the pagination logic in the data.
   
     res.send(feedUsers);
     

@@ -32,7 +32,7 @@ const connectionRequestSchema = new mongoose.Schema({
 connectionRequestSchema.pre("save", function (next) {
 
     const connectionRequest = this;
-
+    console.log(connectionRequest);
     //check if the fromUserId is same as toUserId
 
     if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
