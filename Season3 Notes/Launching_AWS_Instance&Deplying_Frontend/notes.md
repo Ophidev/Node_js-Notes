@@ -121,20 +121,12 @@ sudo cp -r dist/* /var/www/html/
 
 ```mermaid
 flowchart TD
-    A[👨‍💻 Local Dev Machine] --> B[💾 GitHub Repository]
-    B --> C[🌐 EC2 Instance]
-    C --> D[📦 Build Frontend (dist/)]
-    D --> E[🟢 Nginx (/var/www/html)]
-    E --> F[🌍 Browser Access via Port 80]
+    A[Local Dev 💻] --> B[GitHub Repo 💾]
+    B --> C[EC2 Instance 🌐]
+    C --> D[Build Frontend dist]
+    D --> E[Nginx /var/www/html 🟢]
+    E --> F[Browser Access Port 80 🌍]
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#9ff,stroke:#333,stroke-width:2px
-    style C fill:#ff9,stroke:#333,stroke-width:2px
-    style D fill:#f96,stroke:#333,stroke-width:2px
-    style E fill:#6f6,stroke:#333,stroke-width:2px
-    style F fill:#6cf,stroke:#333,stroke-width:2px
-
-    click B "https://github.com" "Open GitHub"
 ```
 
 ✨ Extra Tip: Think **pipeline = code → EC2 → browser**.
