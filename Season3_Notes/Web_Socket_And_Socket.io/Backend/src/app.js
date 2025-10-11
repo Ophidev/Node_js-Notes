@@ -2,10 +2,13 @@ const connectDB = require("./config/database");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const initializeSocket = require("./utils/socket.js");
 
 require('dotenv').config();
 
 require("./utils/cronjob");
+
+const http = require("http");
 
 const app = express();
 
@@ -29,19 +32,17 @@ app.use("/", userRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 
-//so, suppose now if I call GET/profile api then our Express will first run
-// app.use(express.json()) & app.use(cookieParser());
-//then app.use('/',authRouter) then app.use('/'userRouter) then
-// then app.use('/',profileRouter) -> and here Express will get /profile and then send response.
 
-//same for the other the above steps will be repeated
-//after one response express will not go through another route it will finsed their only.
+ const server = http.createServer(app);//creating server using http method 
+ //and passing express server into it so it's work
+
+ initializeSocket(server); //passing server to method to attach the socket with the http server
 
 connectDB()
   .then(() => {
     console.log("sucessfully connected to DB");
 
-    app.listen("3737", () => {
+    server.listen("3737", () => { //using server.listen over here so, it's work.
       console.log("!Server Started at port number 3737");
     });
   })

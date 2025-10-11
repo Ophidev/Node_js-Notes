@@ -13,7 +13,7 @@ const userAuth = async (req,res,next) => {
 
       //validate the token
 
-      const decodeObj = await jwt.verify(token,process.env.JWT_SECRET_KEY,{expiresIn: "1d"});//expires in 1day
+      const decodeObj = await jwt.verify(token, process.env.JWT_SECRET_KEY,{expiresIn: "1d"});//expires in 1day
       
 
       const {_id} = decodeObj;

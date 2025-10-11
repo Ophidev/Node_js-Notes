@@ -97,7 +97,7 @@ userSchema.methods.getJWT = async function () {
 
   const user = this;
   //Create a JWT Token
-  const token = await jwt.sign({_id : user?._id}, JWT_SECRET_KEY);
+  const token = await jwt.sign({_id : user?._id}, process.env.JWT_SECRET_KEY);
 
   return token;
 }
