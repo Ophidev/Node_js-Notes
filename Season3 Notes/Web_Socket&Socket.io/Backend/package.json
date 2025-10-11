@@ -1,0 +1,24 @@
+{
+  "name": "DevTinder-Backend",
+  "version": "1.0.0",
+  "description": "This is a DevTinder Backend project",
+  "license": "ISC",
+  "author": "\"Aditya Bhatt\"",
+  "type": "commonjs",
+  "main": "App.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "node-cron": "^4.2.1",
+    "validator": "^13.15.15"
+  }
+}
