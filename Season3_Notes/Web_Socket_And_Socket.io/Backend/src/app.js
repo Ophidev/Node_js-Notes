@@ -26,11 +26,13 @@ const authRouter = require("../src/routes/authRouter");
 const userRouter = require("../src/routes/userRouter");
 const profileRouter = require("../src/routes/profileRouter");
 const requestRouter = require("../src/routes/requestRouter");
+const chatRouter = require("../src/routes/chat.js");
 
 app.use("/", authRouter);
 app.use("/", userRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/",chatRouter);
 
 
  const server = http.createServer(app);//creating server using http method 
